@@ -1,0 +1,37 @@
+#lang ivy1.7
+
+type money
+
+# A bank model for Alice and Bob.
+object bank = {
+
+    individual balance_alice : money
+    individual balance_bob : money
+
+    after init {
+        # This is a generous bank.
+        # Everyone gets $10 for free in the beginning!
+        balance_alice := 10;
+        balance_bob := 10;
+    }
+
+    action spend_money_alice(x:money) = {       
+        # Make sure that Alice has x dollars in the account.
+        if (x <= balance_alice) {
+            balance_alice := balance_alice - x;
+        };
+    }
+
+    action spend_money_bob(x:money) = {
+        # BUG: We don't check if Bob has x dollars in the account!
+        balance_bob := balance_bob - x;
+    }
+}
+
+# The most important thing in banking operations.
+invariant bank.balance_alice >= 0 & bank.balance_bob >= 0
+
+
+interpret money -> int
+export bank.spend_money_alice
+export bank.spend_money_bob
